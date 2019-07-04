@@ -13,7 +13,7 @@ export default class PortfolioContainer extends Component {
     const data = ["Palmer Traylor Inc", "Shopko Pharmacy 696", "Hamilton County Drug Store"];
 
     return data.map(item => {
-      return <PortfolioItem />;
+      return <h1>{item}</h1>;
     });
   }
 
