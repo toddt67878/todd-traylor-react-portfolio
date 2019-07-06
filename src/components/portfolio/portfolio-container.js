@@ -6,25 +6,29 @@ export default class PortfolioContainer extends Component {
   constructor() {
     super();
 
-    console.log("Portfolio container has rendered");
+    this.state = {
+      pageTitle: "Welcome to my portfolio",
+      data: [
+        { title: "Palmer-Traylor Inc" },
+        { title: "Shopko Pharmacy 2696" },
+        { title: "Hamilton County Drug Store" },
+      ]
+    };
   }
 
   portfolioItems() {
-    const data = ["Palmer Traylor Inc", "Shopko Pharmacy 696", "Hamilton County Drug Store"];
-
-    return data.map(item => {
-      return <h1>{item}</h1>;
+    return this.state.data.map(item => {
+      return <PortfolioItem title={item.title} url={"google.com"} />;
     });
   }
 
   render() {
     return (
       <div>
-        <h2>Portfolio items go here updated...</h2>
+        <h2>{this.state.pageTitle}</h2>
 
         {this.portfolioItems()}
       </div>
     );
   }
 }
-
