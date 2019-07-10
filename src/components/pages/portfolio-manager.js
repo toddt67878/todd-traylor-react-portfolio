@@ -1,91 +1,68 @@
 import React, { Component } from "react";
+import axios from "axios";
 
-export default class PortfolioForm extends Component {
-  constructor(props) {
-    super(props);
+import PortfolioSidebarList from "../portfolio/portfolio-sidebar-list";
+import PortfolioForm from "../portfolio/portfolio-form";
+
+export default class PortfolioManager extends Component {
+  constructor() {
+    super();
 
     this.state = {
-      name: "",
-      description: "",
-      category: "",
-      position: "",
-      url: "",
-      thumb_image: "",
-      banner_image: "",
-      logo: ""
+      portfolioItems: []
     };
 
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleSuccessfulFormSubmission = this.handleSuccessfulFormSubmission.bind(
+      this
+    );
+    this.handleFormSubmissionError = this.handleFormSubmissionError.bind(this);
   }
 
-  handleChange(event) {
+  handleSuccessfulFormSubmission(portfolioItem) {
     this.setState({
-      [event.target.name]: event.target.value
+      portfolioItems: [portfolioItem].concat(this.state.portfolioItems)
     });
   }
 
-  handleSubmit(event) {
-    console.log("event", event);
-    event.preventDefault();
+  handleFormSubmissionError(error) {
+    console.log("handleFormSubmissionError error", error);
+  }
+
+  getPortfolioItems() {
+    axios
+      .get(
+        "https://jordan.devcamp.space/portfolio/portfolio_items?order_by=created_at&direction=desc",
+        {
+          withCredentials: true
+        }
+      )
+      .then(response => {
+        this.setState({
+          portfolioItems: [...response.data.portfolio_items]
+        });
+      })
+      .catch(error => {
+        console.log("error in getPortfolioItems", error);
+      });
+  }
+
+  componentDidMount() {
+    this.getPortfolioItems();
   }
 
   render() {
     return (
-      <div>
-        <h1>PortfolioForm</h1>
+      <div className="portfolio-manager-wrapper">
+        <div className="left-column">
+          <PortfolioForm
+            handleSuccessfulFormSubmission={this.handleSuccessfulFormSubmission}
+            handleFormSubmissionError={this.handleFormSubmissionError}
+          />
+        </div>
 
-        <form onSubmit={this.handleSubmit}>
-          <div>
-            <input
-              type="text"
-              name="name"
-              placeholder="Portfolio Item Name"
-              value={this.state.name}
-              onChange={this.handleChange}
-            />
-
-            <input
-              type="text"
-              name="url"
-              placeholder="URL"
-              value={this.state.url}
-              onChange={this.handleChange}
-            />
-          </div>
-
-          <div>
-            <input
-              type="text"
-              name="position"
-              placeholder="Position"
-              value={this.state.position}
-              onChange={this.handleChange}
-            />
-
-            <input
-              type="text"
-              name="category"
-              placeholder="Category"
-              value={this.state.category}
-              onChange={this.handleChange}
-            />
-          </div>
-
-          <div>
-            <input
-              type="text"
-              name="description"
-              placeholder="Description"
-              value={this.state.description}
-              onChange={this.handleChange}
-            />
-          </div>
-
-          <div>
-            <button type="submit">Save</button>
-          </div>
-        </form>
+        <div className="right-column">
+          <PortfolioSidebarList data={this.state.portfolioItems} />
+        </div>
       </div>
     );
   }
